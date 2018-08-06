@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Spending-->
+        <!--SpendingTable-->
         <scene sceneID="EmS-U9-lYt">
             <objects>
-                <tableViewController id="Tzl-Mo-niw" customClass="SpendingTableViewController" customModule="Spending" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController title="SpendingTable" id="Tzl-Mo-niw" customClass="SpendingTableViewController" customModule="Spending" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="iGu-3j-g29">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -64,11 +64,142 @@
                             <outlet property="delegate" destination="Tzl-Mo-niw" id="tqj-o0-WqS"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Spending" id="taD-YP-9RZ"/>
+                    <navigationItem key="navigationItem" title="Spending" id="taD-YP-9RZ">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="KCs-En-Ir1">
+                            <connections>
+                                <segue destination="hvJ-ln-Iad" kind="presentation" id="IUc-OC-rpv"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ka6-Qo-zIr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1688.8" y="-361.16941529235385"/>
+        </scene>
+        <!--New Spending-->
+        <scene sceneID="JSr-Ua-rw6">
+            <objects>
+                <viewController id="XCp-6n-ilO" customClass="SpendingViewController" customModule="Spending" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="lys-qD-9dH">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" spacing="31" translatesAutoresizingMaskIntoConstraints="NO" id="rgk-kV-rbQ">
+                                <rect key="frame" x="66" y="94" width="243" height="239.5"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="eFX-wQ-ft3">
+                                        <rect key="frame" x="0.0" y="0.0" width="243" height="30"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d0k-eZ-06y">
+                                                <rect key="frame" x="0.0" y="0.0" width="36" height="30"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Year" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MaM-b3-0la">
+                                                <rect key="frame" x="52" y="0.0" width="50" height="30"/>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Month" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="k5S-oC-fHx">
+                                                <rect key="frame" x="118" y="0.0" width="63" height="30"/>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Day" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="c55-5b-djN">
+                                                <rect key="frame" x="197" y="0.0" width="46" height="30"/>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="ZMx-kN-ysb">
+                                        <rect key="frame" x="0.0" y="61" width="243" height="30"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AF4-e9-K36">
+                                                <rect key="frame" x="0.0" y="0.0" width="37.5" height="30"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="SpendingType" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6ll-UO-BPh">
+                                                <rect key="frame" x="45.5" y="0.0" width="197.5" height="30"/>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="jtJ-Fv-Y5H">
+                                        <rect key="frame" x="0.0" y="122" width="243" height="30"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Amount" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iIA-fJ-0f5">
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="30"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Amount" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yyT-9C-2EC">
+                                                <rect key="frame" x="68" y="0.0" width="175" height="30"/>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="Ngt-KD-525">
+                                        <rect key="frame" x="0.0" y="183" width="243" height="56.5"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AKG-JB-Vkb">
+                                                <rect key="frame" x="0.0" y="0.0" width="243" height="20.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Description" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jwb-rr-Oxp">
+                                                <rect key="frame" x="0.0" y="26.5" width="243" height="30"/>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="5JP-81-9t4"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="New Spending" id="6YR-Fe-IpA">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="cDO-xE-O5l">
+                            <connections>
+                                <action selector="cancel:" destination="XCp-6n-ilO" id="9Al-aS-87c"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="BtD-wI-giG">
+                            <connections>
+                                <segue destination="8wf-ZE-YX4" kind="unwind" unwindAction="unwindToSpendingListWithSender:" id="vhg-le-vlq"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="amount" destination="yyT-9C-2EC" id="Jj2-li-Iv5"/>
+                        <outlet property="day" destination="c55-5b-djN" id="OJn-w9-nRb"/>
+                        <outlet property="descript" destination="jwb-rr-Oxp" id="0H2-3v-3be"/>
+                        <outlet property="month" destination="k5S-oC-fHx" id="8Mn-f4-mZ8"/>
+                        <outlet property="saveButton" destination="BtD-wI-giG" id="b7H-C1-76B"/>
+                        <outlet property="type" destination="6ll-UO-BPh" id="pT4-WJ-5vs"/>
+                        <outlet property="year" destination="MaM-b3-0la" id="EVn-3p-V7R"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nby-72-9Ta" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="8wf-ZE-YX4" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="1688.8" y="-1069.1154422788607"/>
         </scene>
         <!--Second-->
         <scene sceneID="wg7-f3-ORb">
@@ -143,6 +274,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kH1-V2-vHX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="749.60000000000002" y="-361.16941529235385"/>
+        </scene>
+        <!--Item-->
+        <scene sceneID="OSk-Nv-BAg">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hvJ-ln-Iad" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="q0G-lm-RzO"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="BL5-v6-qMY">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="XCp-6n-ilO" kind="relationship" relationship="rootViewController" id="dwe-jP-oVk"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="AfE-K3-8Zj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="749.60000000000002" y="-1069.1154422788607"/>
         </scene>
     </scenes>
     <resources>

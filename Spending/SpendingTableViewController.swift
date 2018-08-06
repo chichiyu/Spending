@@ -143,4 +143,14 @@ class SpendingTableViewController: UITableViewController {
     private func loadSpendings() -> [Spending]? {
         return NSKeyedUnarchiver.unarchiveObject(withFile: Spending.ArchiveURL.path) as? [Spending]
     }
+    
+    // MARK: actions
+    @IBAction func unwindToSpendingList(sender: UIStoryboardSegue) {
+        if let sourceViewController = sender.source as? SpendingViewController, let spending = sourceViewController.spending {
+            let newIndexPath = IndexPath(row: spendings.count, section: 0)
+            spendings.append(spending)
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+        }
+        saveSpendings()
+    }
 }
