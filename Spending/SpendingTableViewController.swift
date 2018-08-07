@@ -10,19 +10,32 @@ import UIKit
 
 class SpendingTableViewController: UITableViewController {
     // MARK: Properties
-    var spendings = [Spending]()
+    var spendings: [String: [String: [Spending]]] = [:]
     
+    // MARK: Constants
+    var thisMonth: String = ""
+    var thisYear: String = ""
+    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         navigationItem.leftBarButtonItem = editButtonItem
 
-        // Load the sample data
+        // set the constants
+        thisMonth = getComponent(component: "month", date: Date())
+        thisYear = getComponent(component: "year", date: Date())
+        
+        // set the title
+        self.title = thisMonth + " " + thisYear
+        
+        // Load the data
         if let savedSpendings = loadSpendings() {
-            spendings += savedSpendings
+            spendings = savedSpendings
         } else {
             loadSampleSpendings()
         }
+        print(spendings)
     }
 
     // MARK: - Table view data source
@@ -32,7 +45,9 @@ class SpendingTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return spendings.count
+        print("Number of rows")
+        print(spendings[thisYear]?[thisMonth]?.count ?? 0)
+        return spendings[thisYear]?[thisMonth]?.count ?? 0
     }
 
     
@@ -42,15 +57,11 @@ class SpendingTableViewController: UITableViewController {
             fatalError("The dequeued cell is not an instance of SpendingTableViewCell")
         }
 
-        let spending = spendings[indexPath.row]
+        let spending = spendings[thisYear]![thisMonth]![indexPath.row]
         
         // converts the date to a string
-        let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd"
-        let dateString = df.string(from: spending.date)
         
-        
-        cell.dateLabel.text = dateString
+        cell.dateLabel.text = getComponent(component: "full", date: spending.date)
         cell.descriptionLabel.text = spending.descript
         cell.moneyLabel.text = printMoney(money: spending.money)
         cell.moneyLabel.textColor = getColor(money: spending.money)
@@ -72,7 +83,7 @@ class SpendingTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            spendings.remove(at: indexPath.row)
+            spendings[thisYear]![thisMonth]!.remove(at: indexPath.row)
             saveSpendings()
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
@@ -106,7 +117,7 @@ class SpendingTableViewController: UITableViewController {
             let selectedSpendingCell = sender as! SpendingTableViewCell
             let indexPath = tableView.indexPath(for: selectedSpendingCell)
             
-            let selectedSpending = spendings[indexPath!.row]
+            let selectedSpending = spendings[thisYear]![thisMonth]![indexPath!.row]
             spendingDetailViewController.spending = selectedSpending
         default:
             return
@@ -123,7 +134,8 @@ class SpendingTableViewController: UITableViewController {
         let date2 = df.date(from: "2018/07/27")
         let spending2 = Spending(date: date2!, descript: "Paycheck", money: 0.01, type: "Food")
         
-        spendings += [spending1, spending2]
+        addSpending(spending: spending1)
+        addSpending(spending: spending2)
     }
     
     // print the money in proper format
@@ -146,26 +158,73 @@ class SpendingTableViewController: UITableViewController {
         }
     }
     
+    // return components of a date as a String
+    private func getComponent(component: String, date: Date) -> String {
+        let df = DateFormatter()
+        switch component {
+        case "year": df.dateFormat = "yyyy"
+        case "month": df.dateFormat = "LLL"
+        case "day": df.dateFormat = "d"
+        case "full": df.dateFormat = "yyyy-MM-dd"
+        default: return ""
+        }
+
+        return df.string(from: date)
+    }
+    
+    private func inThisMonth(date: Date) -> Bool {
+        return getComponent(component: "year", date: date) == thisYear && getComponent(component: "month", date: date) == thisMonth
+    }
+    
+    // add a spending to spendings
+    private func addSpending(spending: Spending) {
+        let date = spending.date
+        let year = getComponent(component: "year", date: date)
+        let month = getComponent(component: "month", date: date)
+        
+        if let _ = spendings[year]?[month] {
+            spendings[year]![month]! += [spending]
+        } else if let _ = spendings[year] {
+            spendings[year]![month] = [spending]
+        } else {
+            spendings[year] = [month: [spending]]
+        }
+
+        print(spendings)
+        print("New Spending:")
+        print(spending.date)
+        print(spending.descript)
+        print(spending.money)
+    }
+    
     // saves spending records
     private func saveSpendings() {
         NSKeyedArchiver.archiveRootObject(spendings, toFile: Spending.ArchiveURL.path)
     }
     
     // load spending records
-    private func loadSpendings() -> [Spending]? {
-        return NSKeyedUnarchiver.unarchiveObject(withFile: Spending.ArchiveURL.path) as? [Spending]
+    private func loadSpendings() -> [String: [String:[Spending]]]? {
+        return NSKeyedUnarchiver.unarchiveObject(withFile: Spending.ArchiveURL.path) as? [String: [String:[Spending]]]
     }
     
     // MARK: actions
     @IBAction func unwindToSpendingList(sender: UIStoryboardSegue) {
         if let sourceViewController = sender.source as? SpendingViewController, let spending = sourceViewController.spending {
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
-                spendings[selectedIndexPath.row] = spending
-                tableView.reloadRows(at: [selectedIndexPath], with: .none)
+                if (inThisMonth(date: spending.date)) {
+                    spendings[thisYear]![thisMonth]![selectedIndexPath.row] = spending
+                    tableView.reloadRows(at: [selectedIndexPath], with: .none)
+                } else {
+                    spendings[thisYear]![thisMonth]!.remove(at: selectedIndexPath.row)
+                    tableView.deleteRows(at: [selectedIndexPath], with: .none)
+                    addSpending(spending: spending)
+                }
             } else {
-                let newIndexPath = IndexPath(row: spendings.count, section: 0)
-                spendings.append(spending)
-                tableView.insertRows(at: [newIndexPath], with: .automatic)
+                addSpending(spending: spending)
+                if (inThisMonth(date: spending.date)) {
+                    let newIndexPath = IndexPath(row: spendings[thisYear]![thisMonth]!.count - 1, section: 0)
+                    tableView.insertRows(at: [newIndexPath], with: .automatic)
+                }
             }
         }
         saveSpendings()
