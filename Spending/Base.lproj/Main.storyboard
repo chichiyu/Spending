@@ -56,6 +56,7 @@
                                     <outlet property="dateLabel" destination="a50-g3-iPk" id="aMw-BX-vjM"/>
                                     <outlet property="descriptionLabel" destination="a0h-J5-MAm" id="hC1-Zu-v8x"/>
                                     <outlet property="moneyLabel" destination="BDJ-gp-pyj" id="jWH-72-NI9"/>
+                                    <segue destination="XCp-6n-ilO" kind="show" identifier="ShowDetail" id="JHj-Me-K38"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -67,7 +68,7 @@
                     <navigationItem key="navigationItem" title="Spending" id="taD-YP-9RZ">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="KCs-En-Ir1">
                             <connections>
-                                <segue destination="hvJ-ln-Iad" kind="presentation" id="IUc-OC-rpv"/>
+                                <segue destination="hvJ-ln-Iad" kind="presentation" identifier="AddItem" id="IUc-OC-rpv"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -203,7 +204,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nby-72-9Ta" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="8wf-ZE-YX4" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="1688.8" y="-1069.1154422788607"/>
+            <point key="canvasLocation" x="2518" y="-1069"/>
         </scene>
         <!--Second-->
         <scene sceneID="wg7-f3-ORb">
@@ -303,4 +304,7 @@
         <image name="meal" width="128" height="128"/>
         <image name="second" width="30" height="30"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="dwe-jP-oVk"/>
+    </inferredMetricsTieBreakers>
 </document>

@@ -14,6 +14,8 @@ class SpendingTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.leftBarButtonItem = editButtonItem
 
         // Load the sample data
         if let savedSpendings = loadSpendings() {
@@ -57,25 +59,27 @@ class SpendingTableViewController: UITableViewController {
     }
     
 
-    /*
+    
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
     }
-    */
+    
 
-    /*
+    
     // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
+            spendings.remove(at: indexPath.row)
+            saveSpendings()
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
     }
-    */
+    
 
     /*
     // Override to support rearranging the table view.
@@ -92,24 +96,32 @@ class SpendingTableViewController: UITableViewController {
     }
     */
 
-    /*
+    
     // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        super.prepare(for: segue, sender: sender)
+        switch(segue.identifier ?? "") {
+        case "ShowDetail":
+            let spendingDetailViewController = segue.destination as! SpendingViewController
+            let selectedSpendingCell = sender as! SpendingTableViewCell
+            let indexPath = tableView.indexPath(for: selectedSpendingCell)
+            
+            let selectedSpending = spendings[indexPath!.row]
+            spendingDetailViewController.spending = selectedSpending
+        default:
+            return
+        }
     }
-    */
+    
     
     // MARK: Private functions
     private func loadSampleSpendings() {
-        let spending1 = Spending(date: Date(), descript: "Got robbed..", money: -300)
+        let spending1 = Spending(date: Date(), descript: "Got robbed..", money: -300, type: "Food")
         
         let df = DateFormatter()
         df.dateFormat = "yyyy/MM/dd"
         let date2 = df.date(from: "2018/07/27")
-        let spending2 = Spending(date: date2!, descript: "Paycheck", money: 0.01)
+        let spending2 = Spending(date: date2!, descript: "Paycheck", money: 0.01, type: "Food")
         
         spendings += [spending1, spending2]
     }
@@ -147,9 +159,14 @@ class SpendingTableViewController: UITableViewController {
     // MARK: actions
     @IBAction func unwindToSpendingList(sender: UIStoryboardSegue) {
         if let sourceViewController = sender.source as? SpendingViewController, let spending = sourceViewController.spending {
-            let newIndexPath = IndexPath(row: spendings.count, section: 0)
-            spendings.append(spending)
-            tableView.insertRows(at: [newIndexPath], with: .automatic)
+            if let selectedIndexPath = tableView.indexPathForSelectedRow {
+                spendings[selectedIndexPath.row] = spending
+                tableView.reloadRows(at: [selectedIndexPath], with: .none)
+            } else {
+                let newIndexPath = IndexPath(row: spendings.count, section: 0)
+                spendings.append(spending)
+                tableView.insertRows(at: [newIndexPath], with: .automatic)
+            }
         }
         saveSpendings()
     }

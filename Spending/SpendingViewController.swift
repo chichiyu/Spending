@@ -85,7 +85,7 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         amount.addDoneNextToolbar()
         type.addDoneNextToolbar()
         
-        amount.keyboardType = UIKeyboardType.decimalPad
+        amount.keyboardType = UIKeyboardType.numbersAndPunctuation
         
         // set up the pickers
         let datePicker = UIDatePicker()
@@ -102,13 +102,28 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         // default date to today's date
         date.text = dateToString(date: Date())
         
-        saveButton.isEnabled = false
+        // see if a spending already exists
+        if let spending = spending {
+            navigationItem.title = spending.descript
+            date.text = dateToString(date: spending.date)
+            amount.text = String(format:"%.2f", spending.money)
+            type.text = spending.type
+            descript.text = spending.descript
+        }
+        
+        updateSaveButtonState()
     }
     
     
     // MARK: Navigation
     @IBAction func cancel(_ sender: UIBarButtonItem) {
-        dismiss(animated: true, completion: nil)
+        let isPresentingInAddMode = presentingViewController is UITabBarController
+        print(isPresentingInAddMode)
+        if isPresentingInAddMode {
+            dismiss(animated: true, completion: nil)
+        } else if let owningNavigationController = navigationController {
+            owningNavigationController.popViewController(animated: true)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -118,10 +133,10 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         }
         
         let selectedDate = stringToDate(string: date.text ?? "")
-        // let typeText = type.text
+        let typeText = type.text!
         let descriptText = descript.text
-        let amountValue = Double(amount.text!)!
-        spending = Spending(date: selectedDate, descript: descriptText, money: amountValue)
+        let amountValue = Double(amount.text!) ?? 0
+        spending = Spending(date: selectedDate, descript: descriptText, money: amountValue, type: typeText)
     }
     
     // MARK: UITextFieldDelegate
@@ -133,7 +148,7 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     
     // update save button and title when finisehd editing
     func textFieldDidEndEditing(_ textField: UITextField) {
-        navigationItem.title = descript.text ?? "New Spending"
+        navigationItem.title = descript.text == "" ? "New Spending" : descript.text
         updateSaveButtonState()
     }
     
@@ -151,6 +166,10 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         
         let currentText = textField.text ?? ""
         let replacementText = (currentText as NSString).replacingCharacters(in: range, with: string)
+        
+        if (replacementText == "." || replacementText == "-") {
+            return true
+        }
         
         return isValidDouble(text: replacementText, maxDecimal: 2)
     }
