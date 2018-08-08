@@ -134,8 +134,8 @@ class SpendingTableViewController: UITableViewController {
         let date2 = df.date(from: "2018/07/27")
         let spending2 = Spending(date: date2!, descript: "Paycheck", money: 0.01, type: "Food")
         
-        addSpending(spending: spending1)
-        addSpending(spending: spending2)
+        _ = addSpending(spending: spending1)
+        _ = addSpending(spending: spending2)
     }
     
     // print the money in proper format
@@ -177,17 +177,42 @@ class SpendingTableViewController: UITableViewController {
     }
     
     // add a spending to spendings
-    private func addSpending(spending: Spending) {
+    private func addSpending(spending: Spending) -> Int {
         let date = spending.date
         let year = getComponent(component: "year", date: date)
         let month = getComponent(component: "month", date: date)
+        var index = -1
         
         if let _ = spendings[year]?[month] {
-            spendings[year]![month]! += [spending]
+            
+            // find the index to add using binary search
+            var lo = 0
+            var hi = spendings[year]![month]!.count - 1
+            
+            while lo <= hi {
+                let mid = (lo + hi) / 2
+                if spendings[year]![month]![mid].date < spending.date {
+                    lo = mid + 1
+                } else if spendings[year]![month]![mid].date > spending.date {
+                    hi = mid - 1
+                } else {
+                    index = mid
+                    while index < spendings[year]![month]!.count && spendings[year]![month]![index].date == spending.date {
+                        index += 1
+                    }
+                    break
+                }
+            }
+            
+            if index == -1 {index = lo}
+            spendings[year]![month]!.insert(spending, at: index)
+            
         } else if let _ = spendings[year] {
             spendings[year]![month] = [spending]
+            index = 0
         } else {
             spendings[year] = [month: [spending]]
+            index = 0
         }
 
         print(spendings)
@@ -195,8 +220,10 @@ class SpendingTableViewController: UITableViewController {
         print(spending.date)
         print(spending.descript)
         print(spending.money)
+        
+        return index
     }
-    
+
     // saves spending records
     private func saveSpendings() {
         NSKeyedArchiver.archiveRootObject(spendings, toFile: Spending.ArchiveURL.path)
@@ -211,18 +238,18 @@ class SpendingTableViewController: UITableViewController {
     @IBAction func unwindToSpendingList(sender: UIStoryboardSegue) {
         if let sourceViewController = sender.source as? SpendingViewController, let spending = sourceViewController.spending {
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
-                if (inThisMonth(date: spending.date)) {
-                    spendings[thisYear]![thisMonth]![selectedIndexPath.row] = spending
-                    tableView.reloadRows(at: [selectedIndexPath], with: .none)
-                } else {
                     spendings[thisYear]![thisMonth]!.remove(at: selectedIndexPath.row)
                     tableView.deleteRows(at: [selectedIndexPath], with: .none)
-                    addSpending(spending: spending)
-                }
-            } else {
-                addSpending(spending: spending)
+                    let index = addSpending(spending: spending)
                 if (inThisMonth(date: spending.date)) {
-                    let newIndexPath = IndexPath(row: spendings[thisYear]![thisMonth]!.count - 1, section: 0)
+                    let newIndexPath = IndexPath(row: index, section: 0)
+                    tableView.insertRows(at: [newIndexPath], with: .automatic)
+                }
+                
+            } else {
+                let index = addSpending(spending: spending)
+                if (inThisMonth(date: spending.date)) {
+                    let newIndexPath = IndexPath(row: index, section: 0)
                     tableView.insertRows(at: [newIndexPath], with: .automatic)
                 }
             }

@@ -76,10 +76,10 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         amount.delegate = self
         descript.delegate = self
         
-        date.tag = 0
-        type.tag = 1
-        amount.tag = 2
-        descript.tag = 3
+        date.tag = 1
+        type.tag = 2
+        amount.tag = 3
+        descript.tag = 4
         
         date.addDoneNextToolbar()
         amount.addDoneNextToolbar()
@@ -109,6 +109,10 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
             amount.text = String(format:"%.2f", spending.money)
             type.text = spending.type
             descript.text = spending.descript
+            
+            let typeIndex = typePickerData.index(of: type.text!)!
+            if typeIndex >= 0 {typePicker.selectRow(typeIndex, inComponent:0, animated: true)}
+            datePicker.setDate(spending.date, animated: true)
         }
         
         updateSaveButtonState()
@@ -146,6 +150,16 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         return true
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        // only check for type
+        if textField.tag == 2 {
+            if textField.text == "" {
+                textField.text = typePickerData[0]
+            }
+        }
+    }
+    
     // update save button and title when finisehd editing
     func textFieldDidEndEditing(_ textField: UITextField) {
         navigationItem.title = descript.text == "" ? "New Spending" : descript.text
@@ -156,7 +170,7 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
         // only check text for amount
-        if textField.tag != 2 {
+        if textField.tag != 3 {
             return true
         }
         
