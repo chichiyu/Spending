@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SpendingTableViewController: UITableViewController {
+class SpendingTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     // MARK: Properties
     var spendings: [String: [String: [Spending]]] = [:]
     
@@ -16,11 +16,16 @@ class SpendingTableViewController: UITableViewController {
     var thisMonth: String = ""
     var thisYear: String = ""
     
-        
+    // MARK: outlets
+    @IBOutlet weak var tableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        navigationItem.leftBarButtonItem = editButtonItem
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Edit", style:.plain, target: self, action: #selector(editButtonTapped))
 
         // set the constants
         thisMonth = getComponent(component: "month", date: Date())
@@ -40,18 +45,17 @@ class SpendingTableViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         print("Number of rows")
         print(spendings[thisYear]?[thisMonth]?.count ?? 0)
         return spendings[thisYear]?[thisMonth]?.count ?? 0
     }
 
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellIdentifier = "SpendingTableViewCell"
         guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? SpendingTableViewCell else {
             fatalError("The dequeued cell is not an instance of SpendingTableViewCell")
@@ -72,7 +76,7 @@ class SpendingTableViewController: UITableViewController {
 
     
     // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
     }
@@ -80,7 +84,8 @@ class SpendingTableViewController: UITableViewController {
 
     
     // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
             spendings[thisYear]![thisMonth]!.remove(at: indexPath.row)
@@ -234,6 +239,15 @@ class SpendingTableViewController: UITableViewController {
         return NSKeyedUnarchiver.unarchiveObject(withFile: Spending.ArchiveURL.path) as? [String: [String:[Spending]]]
     }
     
+    @objc private func editButtonTapped() {
+        if (self.tableView.isEditing) {
+            self.tableView.isEditing = false
+            self.navigationItem.leftBarButtonItem?.title = "Edit"
+        } else {
+            self.tableView.isEditing = true
+            self.navigationItem.leftBarButtonItem?.title = "Done"
+        }
+    }
     // MARK: actions
     @IBAction func unwindToSpendingList(sender: UIStoryboardSegue) {
         if let sourceViewController = sender.source as? SpendingViewController, let spending = sourceViewController.spending {
