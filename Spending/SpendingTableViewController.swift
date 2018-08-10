@@ -21,6 +21,9 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var prevMonth: UIButton!
     @IBOutlet weak var nextMonth: UIButton!
+    @IBOutlet weak var income: UILabel!
+    @IBOutlet weak var spent: UILabel!
+    @IBOutlet weak var netChange: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,7 +51,9 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
         } else {
             loadSampleSpendings()
         }
-        print(spendings)
+    
+        // Calculate the totals
+        calculateTotal()
     }
 
     // MARK: - Table view data source
@@ -100,6 +105,7 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
             spendings[thisYear]![thisMonth]!.remove(at: indexPath.row)
             saveSpendings()
             tableView.deleteRows(at: [indexPath], with: .fade)
+            calculateTotal()
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
@@ -150,6 +156,32 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
         
         _ = addSpending(spending: spending1)
         _ = addSpending(spending: spending2)
+    }
+    
+    // calculate the total spending and income for current month
+    private func calculateTotal() {
+        var totalSpending = 0.0
+        var totalIncome = 0.0
+        var netDifference = 0.0
+        
+        if let _ = spendings[thisYear]?[thisMonth] {
+            for spending in spendings[thisYear]![thisMonth]! {
+                if (spending.money > 0)  {totalIncome += spending.money}
+                else {totalSpending += spending.money}
+            }
+            
+            netDifference = totalIncome + totalSpending
+        }
+        
+        income.text = printMoney(money: totalIncome)
+        income.textColor = getColor(money: totalIncome)
+        
+        spent.text = printMoney(money: totalSpending)
+        spent.textColor = getColor(money: totalSpending)
+        
+        netChange.text = printMoney(money: netDifference)
+        netChange.textColor = getColor(money: netDifference)
+        
     }
     
     // print the money in proper format
@@ -288,6 +320,7 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
         
         tableView.reloadData()
         self.title = thisMonthYear
+        calculateTotal()
     }
     
     // MARK: actions
@@ -311,5 +344,6 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
             }
         }
         saveSpendings()
+        calculateTotal()
     }
 }
