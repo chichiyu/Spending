@@ -15,9 +15,12 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
     // MARK: Constants
     var thisMonth: String = ""
     var thisYear: String = ""
+    var thisMonthYear: String = ""
     
     // MARK: outlets
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var prevMonth: UIButton!
+    @IBOutlet weak var nextMonth: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,11 +31,16 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Edit", style:.plain, target: self, action: #selector(editButtonTapped))
 
         // set the constants
-        thisMonth = getComponent(component: "month", date: Date())
-        thisYear = getComponent(component: "year", date: Date())
+        thisMonth = getDate(component: "month", date: Date())
+        thisYear = getDate(component: "year", date: Date())
+        thisMonthYear = getDate(component: "monthYear", date: Date())
         
         // set the title
-        self.title = thisMonth + " " + thisYear
+        self.title = thisMonthYear
+        
+        // add the button functions
+        prevMonth.addTarget(self, action: #selector(toPrevMonth), for: .touchUpInside)
+        nextMonth.addTarget(self, action: #selector(toNextMonth), for: .touchUpInside)
         
         // Load the data
         if let savedSpendings = loadSpendings() {
@@ -48,6 +56,7 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         print("Number of rows")
         print(spendings[thisYear]?[thisMonth]?.count ?? 0)
@@ -65,7 +74,7 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
         
         // converts the date to a string
         
-        cell.dateLabel.text = getComponent(component: "full", date: spending.date)
+        cell.dateLabel.text = getDate(component: "full", date: spending.date)
         cell.descriptionLabel.text = spending.descript
         cell.moneyLabel.text = printMoney(money: spending.money)
         cell.moneyLabel.textColor = getColor(money: spending.money)
@@ -164,11 +173,12 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     // return components of a date as a String
-    private func getComponent(component: String, date: Date) -> String {
+    private func getDate(component: String, date: Date) -> String {
         let df = DateFormatter()
         switch component {
         case "year": df.dateFormat = "yyyy"
         case "month": df.dateFormat = "LLL"
+        case "monthYear": df.dateFormat = "MMM yyyy"
         case "day": df.dateFormat = "d"
         case "full": df.dateFormat = "yyyy-MM-dd"
         default: return ""
@@ -178,14 +188,14 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     private func inThisMonth(date: Date) -> Bool {
-        return getComponent(component: "year", date: date) == thisYear && getComponent(component: "month", date: date) == thisMonth
+        return getDate(component: "monthYear", date: date) == thisMonthYear
     }
     
     // add a spending to spendings
     private func addSpending(spending: Spending) -> Int {
         let date = spending.date
-        let year = getComponent(component: "year", date: date)
-        let month = getComponent(component: "month", date: date)
+        let year = getDate(component: "year", date: date)
+        let month = getDate(component: "month", date: date)
         var index = -1
         
         if let _ = spendings[year]?[month] {
@@ -239,6 +249,7 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
         return NSKeyedUnarchiver.unarchiveObject(withFile: Spending.ArchiveURL.path) as? [String: [String:[Spending]]]
     }
     
+    // switch in and out of edit mode
     @objc private func editButtonTapped() {
         if (self.tableView.isEditing) {
             self.tableView.isEditing = false
@@ -248,6 +259,37 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
             self.navigationItem.leftBarButtonItem?.title = "Done"
         }
     }
+    
+    // go to previous month
+    @objc private func toPrevMonth() {
+        toMonth(dir: "prev")
+    }
+    
+    // go to the next month
+    @objc private func toNextMonth() {
+        toMonth(dir: "next")
+    }
+    
+    // change month in the desired direction
+    private func toMonth(dir: String) {
+        let df = DateFormatter()
+        df.dateFormat = "MMM yyyy"
+        let date = df.date(from: thisMonthYear)!
+        
+        var dc = DateComponents()
+        if (dir == "prev") {dc.month = -1}
+        else if (dir == "next") {dc.month = 1}
+        else {dc.month = 0}
+        let newDate = Calendar.current.date(byAdding: dc, to: date)!
+        
+        thisMonth = getDate(component: "month", date: newDate)
+        thisYear = getDate(component: "year", date: newDate)
+        thisMonthYear = getDate(component: "monthYear", date: newDate)
+        
+        tableView.reloadData()
+        self.title = thisMonthYear
+    }
+    
     // MARK: actions
     @IBAction func unwindToSpendingList(sender: UIStoryboardSegue) {
         if let sourceViewController = sender.source as? SpendingViewController, let spending = sourceViewController.spending {
