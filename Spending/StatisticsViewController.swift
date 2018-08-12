@@ -1,5 +1,5 @@
 //
-//  SecondViewController.swift
+//  StatisticsController.swift
 //  Spending
 //
 //  Created by Chi Yu on 7/25/18.
@@ -19,24 +19,23 @@ class SecondViewController: UIViewController {
     
     // MARK: Outlets
     @IBOutlet weak var barChartView: BarChartView!
+    @IBOutlet weak var prevButton: UIButton!
+    @IBOutlet weak var nextButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         thisYear = getYear(date: Date())
         self.view.backgroundColor = UIColor.white
-    }
+        self.title = thisYear
+        
+        // add the button functions
+        prevButton.addTarget(self, action: #selector(toPrevYear), for: .touchUpInside)
+        nextButton.addTarget(self, action: #selector(toNextYear), for: .touchUpInside)    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // get data for the bar chart
-        if let savedSpendings = loadSpendings() {
-            spendings = savedSpendings
-        }
-
-        let thisYearSpending = getSpendingByMonth()
-        setChart(points: months, values: thisYearSpending)
+        updateChart()
     }
 
 
@@ -107,5 +106,41 @@ class SecondViewController: UIViewController {
         // others
         barChartView.chartDescription?.enabled = false
     }
-}
+    
+    // update the data points for the chart
+    private func updateChart() {
+        if let savedSpendings = loadSpendings() {
+            spendings = savedSpendings
+        }
+        let thisYearSpending = getSpendingByMonth()
+        setChart(points: months, values: thisYearSpending)
+    }
+    
+    // go to previous month
+    @objc private func toPrevYear() {
+        toYear(dir: "prev")
+    }
+    
+    // go to the next month
+    @objc private func toNextYear() {
+        toYear(dir: "next")
+    }
+    
+    // change month in the desired direction
+    private func toYear(dir: String) {
+        let df = DateFormatter()
+        df.dateFormat = "yyyy"
+        let date = df.date(from: thisYear)!
+        
+        var dc = DateComponents()
+        if (dir == "prev") {dc.year = -1}
+        else if (dir == "next") {dc.year = 1}
+        else {dc.year = 0}
+        let newDate = Calendar.current.date(byAdding: dc, to: date)!
+
+        thisYear = getYear(date: newDate)
+        
+        updateChart()
+        self.title = thisYear
+    }}
 
