@@ -11,8 +11,6 @@ import UIKit
 class SpendingTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     // MARK: Properties
     var spendings: [String: [String: [Spending]]] = [:]
-    
-    // MARK: Constants
     var thisMonth: String = ""
     var thisYear: String = ""
     var thisMonthYear: String = ""
