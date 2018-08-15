@@ -19,8 +19,8 @@ class SecondViewController: UIViewController {
     
     // MARK: Outlets
     @IBOutlet weak var barChartView: BarChartView!
-    @IBOutlet weak var prevButton: UIButton!
-    @IBOutlet weak var nextButton: UIButton!
+    @IBOutlet weak var prevButton: UIBarButtonItem!
+    @IBOutlet weak var nextButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,9 +30,12 @@ class SecondViewController: UIViewController {
         self.title = thisYear
         
         // add the button functions
-        prevButton.addTarget(self, action: #selector(toPrevYear), for: .touchUpInside)
-        nextButton.addTarget(self, action: #selector(toNextYear), for: .touchUpInside)    }
-    
+        prevButton.target = self
+        prevButton.action = #selector(toPrevYear)
+        nextButton.target = self
+        nextButton.action = #selector(toNextYear)
+    }
+        
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateChart()

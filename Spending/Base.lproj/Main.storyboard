@@ -306,24 +306,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="554"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="center" fixedFrame="YES" alignment="center" spacing="283" translatesAutoresizingMaskIntoConstraints="NO" id="QFe-hX-56W">
-                                <rect key="frame" x="16" y="0.0" width="343" height="39"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u5j-z6-7lp" userLabel="&lt;">
-                                        <rect key="frame" x="0.0" y="0.0" width="30" height="39"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                                        <state key="normal" title="&lt;"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vHA-oA-TA5">
-                                        <rect key="frame" x="313" y="0.0" width="30" height="39"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                                        <state key="normal" title="&gt;"/>
-                                    </button>
-                                </subviews>
-                            </stackView>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jir-ou-chr" customClass="BarChartView" customModule="Charts">
-                                <rect key="frame" x="0.0" y="35" width="375" height="519"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="554"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <viewLayoutGuide key="safeArea" id="KYh-0v-Dtp"/>
@@ -333,11 +317,14 @@
                         <viewLayoutGuide key="safeArea" id="Kg1-3x-GUH"/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" id="zfB-9W-U2y"/>
+                    <navigationItem key="navigationItem" id="zfB-9W-U2y">
+                        <barButtonItem key="leftBarButtonItem" title="&lt;" id="gBf-KJ-PLU"/>
+                        <barButtonItem key="rightBarButtonItem" title="&gt;" id="Xhl-jt-wSS"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="barChartView" destination="jir-ou-chr" id="ivd-RM-tU9"/>
-                        <outlet property="nextButton" destination="vHA-oA-TA5" id="gsv-Y7-t8b"/>
-                        <outlet property="prevButton" destination="u5j-z6-7lp" id="vOZ-2C-hv9"/>
+                        <outlet property="nextButton" destination="Xhl-jt-wSS" id="ltT-NI-57x"/>
+                        <outlet property="prevButton" destination="gBf-KJ-PLU" id="6ag-ua-dNn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
