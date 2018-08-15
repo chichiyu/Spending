@@ -178,11 +178,24 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" spacing="31" translatesAutoresizingMaskIntoConstraints="NO" id="rgk-kV-rbQ">
-                                <rect key="frame" x="66" y="94" width="175" height="239.5"/>
+                                <rect key="frame" x="66" y="94" width="175" height="300.5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="eFX-wQ-ft3">
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dd2-1A-464">
                                         <rect key="frame" x="0.0" y="0.0" width="175" height="30"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vd8-WG-j56">
+                                                <rect key="frame" x="0.0" y="0.0" width="124" height="30"/>
+                                                <state key="normal" title="Spending"/>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FpY-xt-oRm">
+                                                <rect key="frame" x="124" y="0.0" width="51" height="30"/>
+                                                <state key="normal" title="Income"/>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="eFX-wQ-ft3">
+                                        <rect key="frame" x="0.0" y="61" width="175" height="30"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d0k-eZ-06y">
                                                 <rect key="frame" x="0.0" y="0.0" width="36" height="30"/>
@@ -205,7 +218,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="ZMx-kN-ysb">
-                                        <rect key="frame" x="0.0" y="61" width="175" height="30"/>
+                                        <rect key="frame" x="0.0" y="122" width="175" height="30"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AF4-e9-K36">
                                                 <rect key="frame" x="0.0" y="0.0" width="37.5" height="30"/>
@@ -228,7 +241,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="jtJ-Fv-Y5H">
-                                        <rect key="frame" x="0.0" y="122" width="175" height="30"/>
+                                        <rect key="frame" x="0.0" y="183" width="175" height="30"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Amount" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iIA-fJ-0f5">
                                                 <rect key="frame" x="0.0" y="0.0" width="60" height="30"/>
@@ -251,7 +264,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" tag="-1" contentMode="scaleToFill" axis="vertical" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="Ngt-KD-525">
-                                        <rect key="frame" x="0.0" y="183" width="175" height="56.5"/>
+                                        <rect key="frame" x="0.0" y="244" width="175" height="56.5"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AKG-JB-Vkb">
                                                 <rect key="frame" x="0.0" y="0.0" width="175" height="20.5"/>
@@ -289,14 +302,16 @@
                         <outlet property="amount" destination="yyT-9C-2EC" id="Jj2-li-Iv5"/>
                         <outlet property="date" destination="78a-G4-qcr" id="brC-pL-oJI"/>
                         <outlet property="descript" destination="jwb-rr-Oxp" id="0H2-3v-3be"/>
+                        <outlet property="incomeButton" destination="FpY-xt-oRm" id="7h3-Lu-7mh"/>
                         <outlet property="saveButton" destination="BtD-wI-giG" id="b7H-C1-76B"/>
+                        <outlet property="spendingButton" destination="Vd8-WG-j56" id="Prd-4t-iy2"/>
                         <outlet property="type" destination="6ll-UO-BPh" id="pT4-WJ-5vs"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nby-72-9Ta" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="8wf-ZE-YX4" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2518" y="-1069"/>
+            <point key="canvasLocation" x="2517.5999999999999" y="-1069.1154422788607"/>
         </scene>
         <!--Second View Controller-->
         <scene sceneID="wg7-f3-ORb">

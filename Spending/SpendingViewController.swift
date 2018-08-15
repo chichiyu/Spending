@@ -38,9 +38,11 @@ extension UITextField {
 
 class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     var spending: Spending?
+    var isSpending = true
     
     // MARK: Data constants
-    let typePickerData = [String](arrayLiteral: "Food", "Travel")
+    let spendingData = [String](arrayLiteral: "Entertainment", "Food", "Fuel", "Shopping", "Sports", "Travel", "Other")
+    let incomeData = [String](arrayLiteral: "Gift", "Salary", "Other")
     
     // MARK: UIPickerDelegation
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -48,15 +50,15 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return typePickerData.count
+        return isSpending ? spendingData.count : incomeData.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return typePickerData[row]
+        return isSpending ? spendingData[row] : incomeData[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        type.text = typePickerData[row]
+        type.text = isSpending ? spendingData[row] : incomeData[row]
     }
     
     
@@ -66,6 +68,8 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     @IBOutlet weak var type: UITextField!
     @IBOutlet weak var descript: UITextField!
     @IBOutlet weak var saveButton: UIBarButtonItem!
+    @IBOutlet weak var incomeButton: UIButton!
+    @IBOutlet weak var spendingButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,7 +89,7 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         amount.addDoneNextToolbar()
         type.addDoneNextToolbar()
         
-        amount.keyboardType = UIKeyboardType.numbersAndPunctuation
+        amount.keyboardType = UIKeyboardType.decimalPad
         
         // set up the pickers
         let datePicker = UIDatePicker()
@@ -106,16 +110,22 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         if let spending = spending {
             navigationItem.title = spending.descript
             date.text = dateToString(date: spending.date)
-            amount.text = String(format:"%.2f", spending.money)
+            amount.text = String(format:"%.2f", spending.money >= 0 ? spending.money : -spending.money)
             type.text = spending.type
             descript.text = spending.descript
             
-            let typeIndex = typePickerData.index(of: type.text!)!
-            if typeIndex >= 0 {typePicker.selectRow(typeIndex, inComponent:0, animated: true)}
+            let typeIndex = spending.money >= 0 ? incomeData.index(of: type.text!) ?? -1 : spendingData.index(of: type.text!) ?? -1
+            if typeIndex >= 0 {typePicker.selectRow(typeIndex, inComponent: 0, animated: true)}
             datePicker.setDate(spending.date, animated: true)
+            
+            isSpending = spending.money < 0
         }
         
+        incomeButton.addTarget(self, action: #selector(incomePressed), for: .touchUpInside)
+        spendingButton.addTarget(self, action: #selector(spendingPressed), for: .touchUpInside)
+        
         updateSaveButtonState()
+        updateButtonState()
     }
     
     
@@ -139,7 +149,7 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         let selectedDate = stringToDate(string: date.text ?? "")
         let typeText = type.text!
         let descriptText = descript.text
-        let amountValue = Double(amount.text!) ?? 0
+        let amountValue = isSpending ? -(Double(amount.text!) ?? 0) : Double(amount.text!) ?? 0
         spending = Spending(date: selectedDate, descript: descriptText, money: amountValue, type: typeText)
     }
     
@@ -155,7 +165,7 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         // only check for type
         if textField.tag == 2 {
             if textField.text == "" {
-                textField.text = typePickerData[0]
+                textField.text = isSpending ? spendingData[0] : incomeData[0]
             }
         }
     }
@@ -181,7 +191,7 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         let currentText = textField.text ?? ""
         let replacementText = (currentText as NSString).replacingCharacters(in: range, with: string)
         
-        if (replacementText == "." || replacementText == "-") {
+        if (replacementText == ".") {
             return true
         }
         
@@ -216,12 +226,40 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         saveButton.isEnabled = !(amountText.isEmpty || typeText.isEmpty)
     }
     
+    @objc private func incomePressed() {
+        isSpending = false
+        if !incomeData.contains(type.text!) {
+            type.text = ""
+        }
+        updateSaveButtonState()
+        updateButtonState()
+    }
+    
+    @objc private func spendingPressed() {
+        isSpending = true
+        if !spendingData.contains(type.text!) {
+            type.text = ""
+        }
+        updateSaveButtonState()
+        updateButtonState()
+    }
+    
+    private func updateButtonState() {
+        if isSpending {
+            spendingButton.backgroundColor = UIColor.red
+            incomeButton.backgroundColor = UIColor.white
+        } else {
+            spendingButton.backgroundColor = UIColor.white
+            incomeButton.backgroundColor = UIColor.green
+        }
+    }
     // check if a double is a valid max n decimal-place double
     private func isValidDouble(text: String, maxDecimal: Int) -> Bool {
         let nf = NumberFormatter()
         let separator = nf.decimalSeparator ?? "."
         
-        if nf.number(from: text) != nil {
+        if let num = nf.number(from: text) {
+            if num.doubleValue < 0 {return false}
             let split = text.components(separatedBy: separator)
             let digits = split.count == 2 ? split.last ?? "" : ""
             return digits.count <= maxDecimal
