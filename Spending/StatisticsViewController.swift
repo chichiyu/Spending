@@ -16,6 +16,10 @@ class SecondViewController: UIViewController {
     
     // MARK: Constant
     let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    let GREEN = UIColor(red:0.21, green:0.93, blue:0.36, alpha:1.0)
+    let RED = UIColor(red:0.93, green:0.26, blue:0.21, alpha:1.0)
+    let DARKBLUE = UIColor(red:0.16, green:0.36, blue:0.94, alpha:1.0)
+    let BLUE = UIColor(red:0.61, green:0.80, blue:1.00, alpha:1.0)
     
     // MARK: Outlets
     @IBOutlet weak var barChartView: BarChartView!
@@ -28,6 +32,16 @@ class SecondViewController: UIViewController {
         thisYear = getYear(date: Date())
         self.view.backgroundColor = UIColor.white
         self.title = thisYear
+        
+        // change navigation and tab bar color
+        navigationController?.navigationBar.barTintColor = BLUE
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        navigationItem.rightBarButtonItem?.tintColor = UIColor.black
+        navigationItem.leftBarButtonItem?.tintColor = UIColor.black
+        
+        tabBarController?.tabBar.barTintColor = BLUE
+        tabBarController?.tabBar.tintColor = DARKBLUE
+        tabBarController?.tabBar.unselectedItemTintColor = UIColor.darkGray
         
         // add the button functions
         prevButton.target = self
@@ -77,7 +91,7 @@ class SecondViewController: UIViewController {
             let dataEntry = BarChartDataEntry(x: Double(i), y: values[i])
             dataEntries.append(dataEntry)
             
-            colors.append(values[i] > 0 ? UIColor.green : values[i] < 0 ? UIColor.red : UIColor.black)
+            colors.append(values[i] > 0 ? GREEN : values[i] < 0 ? RED : UIColor.black)
         }
         
         let chartDataSet = BarChartDataSet(values: dataEntries, label: "Net Income ($)")

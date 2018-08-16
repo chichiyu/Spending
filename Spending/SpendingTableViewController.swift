@@ -15,6 +15,12 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
     var thisYear: String = ""
     var thisMonthYear: String = ""
     
+    // MARK: constants
+    let GREEN = UIColor(red:0.21, green:0.93, blue:0.36, alpha:1.0)
+    let RED = UIColor(red:0.93, green:0.26, blue:0.21, alpha:1.0)
+    let DARKBLUE = UIColor(red:0.16, green:0.36, blue:0.94, alpha:1.0)
+    let BLUE = UIColor(red:0.61, green:0.80, blue:1.00, alpha:1.0)
+    
     // MARK: outlets
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var prevMonth: UIButton!
@@ -26,10 +32,20 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Edit", style:.plain, target: self, action: #selector(editButtonTapped))
+
+        // change navigation and tab bar color
+        navigationController?.navigationBar.barTintColor = BLUE
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        navigationItem.rightBarButtonItem?.tintColor = UIColor.black
+        navigationItem.leftBarButtonItem?.tintColor = UIColor.black
+        
+        tabBarController?.tabBar.barTintColor = BLUE
+        tabBarController?.tabBar.tintColor = DARKBLUE
+        tabBarController?.tabBar.unselectedItemTintColor = UIColor.darkGray
+
         tableView.dataSource = self
         tableView.delegate = self
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Edit", style:.plain, target: self, action: #selector(editButtonTapped))
 
         // set the constants
         thisMonth = getDate(component: "month", date: Date())
@@ -194,9 +210,9 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
     // selects red or green based on the value of money
     private func getColor(money: Double) -> UIColor {
         if money > 0 {
-            return UIColor.green
+            return GREEN
         } else if money < 0 {
-            return UIColor.red
+            return RED
         } else {
             return UIColor.black
         }
