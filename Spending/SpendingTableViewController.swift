@@ -275,13 +275,6 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
             spendings[year] = [month: [spending]]
             index = 0
         }
-
-        print(spendings)
-        print("New Spending:")
-        print(spending.date)
-        print(spending.descript)
-        print(spending.money)
-        
         return index
     }
 

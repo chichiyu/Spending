@@ -8,8 +8,36 @@
 
 import UIKit
 
+// add a way to find first responder
+extension UIView {
+    var firstResponder: UIView? {
+        guard !isFirstResponder else {return self}
+        
+        for subview in subviews {
+            if let firstResponder = subview.firstResponder {
+                return firstResponder
+            }
+        }
+        
+        return nil
+    }
+}
+// adds a toolbar to some of the textview and textfield
+extension UITextView {
+    func addDoneToolbar(onDone: (target: Any, action: Selector)? = nil) {
+        let onDone = onDone ?? (target: self, action: #selector(doneButtonTapped))
+        
+        let toolbar = UIToolbar()
+        toolbar.items = [
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil),  UIBarButtonItem(title: "Done", style: .done, target: onDone.target, action: onDone.action),
+        ]
+        toolbar.sizeToFit()
+        
+        self.inputAccessoryView = toolbar
+    }
+    
+    @objc func doneButtonTapped() { self.resignFirstResponder()}}
 
-// adds a toolbar to some of the textfields
 extension UITextField {
     func addDoneNextToolbar(onDone: (target: Any, action: Selector)? = nil, onNext: (target: Any, action:Selector)? = nil) {
         let onDone = onDone ?? (target: self, action: #selector(doneButtonTapped))
@@ -27,8 +55,9 @@ extension UITextField {
     }
     
     @objc func doneButtonTapped() { self.resignFirstResponder()}
+    
     @objc func nextButtonTapped() {
-        if let nextField = self.superview?.superview?.viewWithTag(self.tag + 1) as? UITextField {
+        if let nextField = self.superview?.superview?.viewWithTag(self.tag + 1) as? UITextField ?? self.superview?.superview?.viewWithTag(self.tag + 1) as? UITextView {
             nextField.becomeFirstResponder()
         } else {
             self.resignFirstResponder()
@@ -36,13 +65,16 @@ extension UITextField {
     }
 }
 
-class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
+class SpendingViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     var spending: Spending?
     var isSpending = true
     
     // MARK: Data constants
     let spendingData = [String](arrayLiteral: "Entertainment", "Food", "Fuel", "Shopping", "Sports", "Travel", "Other")
     let incomeData = [String](arrayLiteral: "Gift", "Salary", "Other")
+    let LIGHTGRAY = UIColor(red:0.92, green:0.92, blue:0.92, alpha:1.0)
+    let DARKBLUE = UIColor(red:0.16, green:0.36, blue:0.94, alpha:1.0)
+    let BLUE = UIColor(red:0.61, green:0.80, blue:1.00, alpha:1.0)
     
     // MARK: UIPickerDelegation
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -66,7 +98,7 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     @IBOutlet weak var date: UITextField!
     @IBOutlet weak var amount: UITextField!
     @IBOutlet weak var type: UITextField!
-    @IBOutlet weak var descript: UITextField!
+    @IBOutlet weak var descript: UITextView!
     @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var incomeButton: UIButton!
     @IBOutlet weak var spendingButton: UIButton!
@@ -74,11 +106,31 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        // change navigation and tab bar color
+        
+        navigationController?.navigationBar.barTintColor = BLUE
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        navigationItem.rightBarButtonItem?.tintColor = UIColor.black
+        navigationItem.leftBarButtonItem?.tintColor = UIColor.black
+        
+        tabBarController?.tabBar.barTintColor = BLUE
+        tabBarController?.tabBar.tintColor = DARKBLUE
+        tabBarController?.tabBar.unselectedItemTintColor = UIColor.darkGray
+
         // set up text fields
         date.delegate = self
         type.delegate = self
         amount.delegate = self
         descript.delegate = self
+        
+        // make placeholder for descript
+        descript.text = "Description"
+        descript.textColor = LIGHTGRAY
+        descript.layer.borderWidth = 1
+        descript.layer.borderColor = LIGHTGRAY.cgColor
+        descript.layer.cornerRadius = 10
         
         date.tag = 1
         type.tag = 2
@@ -88,6 +140,7 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         date.addDoneNextToolbar()
         amount.addDoneNextToolbar()
         type.addDoneNextToolbar()
+        descript.addDoneToolbar()
         
         amount.keyboardType = UIKeyboardType.decimalPad
         
@@ -113,6 +166,7 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
             amount.text = String(format:"%.2f", spending.money >= 0 ? spending.money : -spending.money)
             type.text = spending.type
             descript.text = spending.descript
+            descript.textColor = UIColor.black
             
             let typeIndex = spending.money >= 0 ? incomeData.index(of: type.text!) ?? -1 : spendingData.index(of: type.text!) ?? -1
             if typeIndex >= 0 {typePicker.selectRow(typeIndex, inComponent: 0, animated: true)}
@@ -172,7 +226,6 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     
     // update save button and title when finisehd editing
     func textFieldDidEndEditing(_ textField: UITextField) {
-        navigationItem.title = descript.text == "" ? "New Spending" : descript.text
         updateSaveButtonState()
     }
     
@@ -198,6 +251,23 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         return isValidDouble(text: replacementText, maxDecimal: 2)
     }
 
+    // UITextViewDelegate
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if (textView.text == "Description") {
+            textView.text = ""
+            textView.textColor = UIColor.black
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if (textView.text == "") {
+            textView.text = "Description"
+            textView.textColor = UIColor.lightGray
+        }
+        navigationItem.title = descript.text == "" ? "New Spending" : descript.text
+        textView.resignFirstResponder()
+    }
+    
     // MARK: private functions
     // return a date type from a string
     private func dateToString(date: Date) -> String {
@@ -242,6 +312,24 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         }
         updateSaveButtonState()
         updateButtonState()
+    }
+    
+    // move screen if necessary
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if view.window?.firstResponder as? UITextView != nil {
+            if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                if self.view.frame.origin.y == 0 {
+                    let offset = keyboardSize.height
+                    self.view.frame.origin.y -= offset
+                }
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
     }
     
     private func updateButtonState() {
