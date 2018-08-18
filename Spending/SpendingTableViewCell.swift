@@ -13,6 +13,8 @@ class SpendingTableViewCell: UITableViewCell {
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var moneyLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var icon: UIImageView!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

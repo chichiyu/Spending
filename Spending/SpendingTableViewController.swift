@@ -17,10 +17,8 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
     
     // MARK: constants
     let GREEN = UIColor(red:0.21, green:0.93, blue:0.36, alpha:1.0)
-    let RED = UIColor(red:0.93, green:0.26, blue:0.21, alpha:1.0)
-    let DARKBLUE = UIColor(red:0.16, green:0.36, blue:0.94, alpha:1.0)
-    let BLUE = UIColor(red:0.61, green:0.80, blue:1.00, alpha:1.0)
-    
+    let RED = UIColor(red:1.00 , green:0.4, blue:0.4, alpha:1.0)
+
     // MARK: outlets
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var prevMonth: UIButton!
@@ -35,13 +33,10 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Edit", style:.plain, target: self, action: #selector(editButtonTapped))
 
         // change navigation and tab bar color
-        navigationController?.navigationBar.barTintColor = BLUE
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         navigationItem.rightBarButtonItem?.tintColor = UIColor.black
         navigationItem.leftBarButtonItem?.tintColor = UIColor.black
-        
-        tabBarController?.tabBar.barTintColor = BLUE
-        tabBarController?.tabBar.tintColor = DARKBLUE
+
         tabBarController?.tabBar.unselectedItemTintColor = UIColor.darkGray
 
         tableView.dataSource = self
@@ -53,7 +48,7 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
         thisMonthYear = getDate(component: "monthYear", date: Date())
         
         // set the title
-        self.title = thisMonthYear
+        self.navigationItem.title = thisMonthYear
         
         // add the button functions
         prevMonth.addTarget(self, action: #selector(toPrevMonth), for: .touchUpInside)
@@ -97,6 +92,7 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
         cell.descriptionLabel.text = spending.descript
         cell.moneyLabel.text = printMoney(money: spending.money)
         cell.moneyLabel.textColor = getColor(money: spending.money)
+        cell.icon.image = UIImage(named: spending.type.lowercased())
 
         return cell
     }
@@ -326,7 +322,7 @@ class SpendingTableViewController: UIViewController, UITableViewDataSource, UITa
         thisMonthYear = getDate(component: "monthYear", date: newDate)
         
         tableView.reloadData()
-        self.title = thisMonthYear
+        self.navigationItem.title = thisMonthYear
         calculateTotal()
     }
     

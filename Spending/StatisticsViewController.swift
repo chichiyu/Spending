@@ -17,9 +17,7 @@ class SecondViewController: UIViewController {
     // MARK: Constant
     let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     let GREEN = UIColor(red:0.21, green:0.93, blue:0.36, alpha:1.0)
-    let RED = UIColor(red:0.93, green:0.26, blue:0.21, alpha:1.0)
-    let DARKBLUE = UIColor(red:0.16, green:0.36, blue:0.94, alpha:1.0)
-    let BLUE = UIColor(red:0.61, green:0.80, blue:1.00, alpha:1.0)
+    let RED = UIColor(red:1.00 , green:0.41, blue:0.41, alpha:1.0)
     
     // MARK: Outlets
     @IBOutlet weak var barChartView: BarChartView!
@@ -31,16 +29,15 @@ class SecondViewController: UIViewController {
         
         thisYear = getYear(date: Date())
         self.view.backgroundColor = UIColor.white
-        self.title = thisYear
+        self.navigationItem.title = thisYear
         
         // change navigation and tab bar color
-        navigationController?.navigationBar.barTintColor = BLUE
+        navigationController?.navigationBar.barTintColor = UIColor.white
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         navigationItem.rightBarButtonItem?.tintColor = UIColor.black
         navigationItem.leftBarButtonItem?.tintColor = UIColor.black
-        
-        tabBarController?.tabBar.barTintColor = BLUE
-        tabBarController?.tabBar.tintColor = DARKBLUE
+
+        tabBarController?.tabBar.barTintColor = UIColor.white
         tabBarController?.tabBar.unselectedItemTintColor = UIColor.darkGray
         
         // add the button functions
@@ -158,6 +155,6 @@ class SecondViewController: UIViewController {
         thisYear = getYear(date: newDate)
         
         updateChart()
-        self.title = thisYear
+        self.navigationItem.title = thisYear
     }}
 

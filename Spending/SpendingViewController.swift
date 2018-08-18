@@ -73,8 +73,8 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UITextViewD
     let spendingData = [String](arrayLiteral: "Entertainment", "Food", "Fuel", "Shopping", "Sports", "Travel", "Other")
     let incomeData = [String](arrayLiteral: "Gift", "Salary", "Other")
     let LIGHTGRAY = UIColor(red:0.92, green:0.92, blue:0.92, alpha:1.0)
-    let DARKBLUE = UIColor(red:0.16, green:0.36, blue:0.94, alpha:1.0)
-    let BLUE = UIColor(red:0.61, green:0.80, blue:1.00, alpha:1.0)
+    let RED = UIColor(red:1.00, green:0.4, blue:0.4, alpha:1.0)
+    let GREEN = UIColor(red:0.21, green:0.93, blue:0.36, alpha:1.0)
     
     // MARK: UIPickerDelegation
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -109,14 +109,10 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UITextViewD
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         // change navigation and tab bar color
-        
-        navigationController?.navigationBar.barTintColor = BLUE
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         navigationItem.rightBarButtonItem?.tintColor = UIColor.black
         navigationItem.leftBarButtonItem?.tintColor = UIColor.black
         
-        tabBarController?.tabBar.barTintColor = BLUE
-        tabBarController?.tabBar.tintColor = DARKBLUE
         tabBarController?.tabBar.unselectedItemTintColor = UIColor.darkGray
 
         // set up text fields
@@ -314,6 +310,20 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UITextViewD
         updateButtonState()
     }
     
+    private func updateButtonState() {
+        if isSpending {
+            spendingButton.backgroundColor = RED
+            spendingButton.setTitleColor(UIColor.black, for: .normal)
+            incomeButton.backgroundColor = UIColor.black
+            incomeButton.setTitleColor(UIColor.white, for: .normal)
+        } else {
+            spendingButton.backgroundColor = UIColor.black
+            spendingButton.setTitleColor(UIColor.white, for: .normal)
+            incomeButton.backgroundColor = GREEN
+            incomeButton.setTitleColor(UIColor.black, for: .normal)
+        }
+    }
+    
     // move screen if necessary
     @objc func keyboardWillShow(notification: NSNotification) {
         if view.window?.firstResponder as? UITextView != nil {
@@ -332,15 +342,6 @@ class SpendingViewController: UIViewController, UITextFieldDelegate, UITextViewD
         }
     }
     
-    private func updateButtonState() {
-        if isSpending {
-            spendingButton.backgroundColor = UIColor.red
-            incomeButton.backgroundColor = UIColor.white
-        } else {
-            spendingButton.backgroundColor = UIColor.white
-            incomeButton.backgroundColor = UIColor.green
-        }
-    }
     // check if a double is a valid max n decimal-place double
     private func isValidDouble(text: String, maxDecimal: Int) -> Bool {
         let nf = NumberFormatter()
